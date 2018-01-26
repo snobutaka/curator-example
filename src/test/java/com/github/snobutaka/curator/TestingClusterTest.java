@@ -30,7 +30,7 @@ public class TestingClusterTest {
             List<String> nodes = curator.getChildren().forPath("/");
             assertThat(nodes, is(Arrays.asList("zookeeper")));
 
-            for (int i = 0; i < majority(instanceQty) + 1; i++) {
+            for (int i = 0; i < majority(instanceQty) - 1; i++) {
                 ZooKeeper zk = curator.getZookeeperClient().getZooKeeper();
                 InstanceSpec instance = zkCluster.findConnectionInstance(zk);
                 zkCluster.killServer(instance);
