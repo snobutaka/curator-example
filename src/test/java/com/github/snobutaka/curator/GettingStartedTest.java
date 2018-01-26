@@ -14,8 +14,12 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
+import org.apache.curator.CuratorZookeeperClient;
 import org.apache.curator.framework.CuratorFramework;
+import org.apache.curator.framework.imps.CuratorFrameworkState;
 import org.apache.curator.test.TestingServer;
+import org.apache.zookeeper.ZooKeeper;
+import org.apache.zookeeper.ZooKeeper.States;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -51,10 +55,24 @@ public class GettingStartedTest {
     }
 
     @Test
-    public void testGetConnection() {
+    public void testGetConnection() throws InterruptedException {
         GettingStarted gettingStarted = new GettingStarted();
         CuratorFramework curator = gettingStarted.getConnection(this.zookeeperServer.getConnectString());
-        assertThat(curator.isStarted(), is(true));
+        curator.blockUntilConnected();
+        assertThat(curator.getState(), is(CuratorFrameworkState.STARTED));
+    }
+
+    @Test
+    public void testCuratorRetursZooKeeperClient() throws Exception {
+        GettingStarted gettingStarted = new GettingStarted();
+        CuratorFramework curator = gettingStarted.getConnection(this.zookeeperServer.getConnectString());
+        CuratorZookeeperClient curatorZkClient = curator.getZookeeperClient();
+        ZooKeeper zkClient = curatorZkClient.getZooKeeper();
+
+        curator.blockUntilConnected();
+        assertThat(curator.getState(), is(CuratorFrameworkState.STARTED));
+        assertThat(curatorZkClient.isConnected(), is(true));
+        assertThat(zkClient.getState(), is(States.CONNECTED));
     }
 
     @Test
