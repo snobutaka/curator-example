@@ -1,9 +1,8 @@
 package com.github.snobutaka.curator;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.CoreMatchers.*;
+import static org.junit.Assert.*;
 
-import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -17,31 +16,13 @@ import java.util.concurrent.Future;
 import org.apache.curator.CuratorZookeeperClient;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.imps.CuratorFrameworkState;
-import org.apache.curator.test.TestingServer;
 import org.apache.zookeeper.ZooKeeper;
 import org.apache.zookeeper.ZooKeeper.States;
-import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
 
 import com.github.snobutaka.curator.GettingStarted.LockedProcedure;
 
-public class GettingStartedTest {
-
-    TestingServer zookeeperServer;
-
-    @Before
-    public void setUp() throws Exception {
-        this.zookeeperServer = new TestingServer();
-        this.zookeeperServer.start();
-    }
-
-    @After
-    public void tearDown() throws IOException {
-        if (this.zookeeperServer != null) {
-            this.zookeeperServer.close();
-        }
-    }
+public class GettingStartedTest extends TestBase {
 
     /**
      * Test ZooKeeper 3.4.x compatibility.
@@ -99,8 +80,10 @@ public class GettingStartedTest {
         final List<String> target = Collections.synchronizedList(new ArrayList<String>());
 
         Future<String> futureOfProc1 = executor.submit(new Callable<String>() {
+            @Override
             public String call() throws Exception {
                 LockedProcedure<String> proc = new LockedProcedure<String>() {
+                    @Override
                     public String execute() {
                         try {
                             String data = "1";
@@ -117,8 +100,10 @@ public class GettingStartedTest {
         });
 
         Future<String> futureOfProc2 = executor.submit(new Callable<String>() {
+            @Override
             public String call() throws Exception {
                 LockedProcedure<String> proc = new LockedProcedure<String>() {
+                    @Override
                     public String execute() {
                         String data = "2";
                         target.add(data);
